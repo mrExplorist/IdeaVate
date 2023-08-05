@@ -32,3 +32,6 @@ yarn-error.log*
 
 # vercel
 .vercel
+
+# addresses 
+contractAddress.json
