@@ -22,6 +22,7 @@ async function main() {
 
   const address = JSON.stringify({ address: contract.address }, null, 4)
 
+  // Write contract address to 'contractAddress.json' file
   fs.writeFile('./artifacts/contractAddress.json', address, 'utf8', (error) => {
     if (error) {
       console.log(error)
