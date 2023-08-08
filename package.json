@@ -1,9 +1,9 @@
 {
-  "name": "starter_kit",
-  "description": "A Next.js starter that includes all you need to build amazing projects",
+  "name": "ideavate",
+  "description": "IdeaVateHub is a collaborative decentralised platform where innovative minds connect to share and validate groundbreaking ideas. Earn rewards for contributing valuable insights and help turn ideas into reality.",
   "version": "1.0.0",
   "private": true,
-  "author": "darlington gospel<darlingtongospel@gmail.com>",
+  "author": "Lalit Sharma<mailfor.lalitsharma@gmail.com>",
   "license": "MIT",
   "keywords": [
     "nextjs",
@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "@reduxjs/toolkit": "1.9.3",
+    "@types/uuid": "9.0.2",
     "ethers": "^5.4.7",
     "moment": "2.29.4",
     "next": "13.1.2",
@@ -36,7 +37,8 @@
     "react-identicons": "1.2.5",
     "react-moment": "1.1.3",
     "react-redux": "8.0.5",
-    "react-toastify": "9.1.2"
+    "react-toastify": "9.1.2",
+    "uuid": "9.0.0"
   },
   "devDependencies": {
     "@emotion/react": "11.10.5",
