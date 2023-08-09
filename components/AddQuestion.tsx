@@ -1,8 +1,9 @@
 import { globalActions } from '@/store/globalSlices'
 import { QuestionParams, RootState } from '@/utils/interfaces'
-import React, { useState } from 'react'
+import React, { FormEvent, useState } from 'react'
 import { FaTimes } from 'react-icons/fa'
 import { useDispatch, useSelector } from 'react-redux'
+import { toast } from 'react-toastify'
 
 const AddQuestion: React.FC = () => {
   const dispatch = useDispatch()
@@ -16,6 +17,22 @@ const AddQuestion: React.FC = () => {
     prize: null,
     tags: '',
   })
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault()
+    if (!question.title || !question.description || !question.prize || !question.tags) return
+    console.log(question)
+    await toast.promise(
+      new Promise<void>((resolve, reject) => {
+        // TODO: add question to blockchain
+      }),
+      {
+        pending: 'Approve transaction...',
+        success: 'Idea added successfully ✅!',
+        error: 'Encountered error 🤯‼',
+      }
+    )
+  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -104,6 +121,8 @@ const AddQuestion: React.FC = () => {
           <button
             className="text-sm bg-blue-600 rounded-full w-[150px] h-[48px] text-white
             right-2 sm:right-10 hover:bg-blue-700 transition-colors duration-300"
+            type="submit"
+            onSubmit={handleSubmit}
           >
             Submit
           </button>
