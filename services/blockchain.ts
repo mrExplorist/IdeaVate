@@ -85,11 +85,25 @@ const getQuestions = async (): Promise<QuestionProp[]> => {
   }
 }
 
+const getQuestion = async (id: number): Promise<QuestionProp> => {
+  try {
+    const contract = await getEthereumContract() // Create contract instance from ethers to interact with the smart contract
+    const question = await contract.getQuestion(id) // Call getQuestions function from the smart contract
+
+    console.log(question) // Structure questions
+    return structureQuestions([question])[0] // structureQuestions return array of questions, so we need to get the first element of the array
+  } catch (error) {
+    // Handle errors gracefully
+    console.error('Error fetching questions:', error)
+    throw new Error('Failed to fetch question. Please try again later.')
+  }
+}
+
 // structure questions
 
 const structureQuestions = (questions: any[]): QuestionProp[] =>
   questions.map((question) => ({
-    id: question.id,
+    id: Number(question.id),
     title: question.title,
     description: question.description,
     owner: question.owner,
@@ -107,4 +121,4 @@ const reportError = (err: any) => {
   console.log(err)
 }
 
-export { connectWallet, checkWallet, getQuestions }
+export { connectWallet, checkWallet, getQuestions, getQuestion }
