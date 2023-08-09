@@ -3,9 +3,9 @@ import { globalActions } from '@/store/globalSlices'
 import { ethers } from 'ethers'
 import address from '@/artifacts/contractAddress.json'
 import abi from '@/artifacts/contracts/AnswerToEarn.sol/AnswerToEarn.json'
-import { QuestionProp } from '@/utils/interfaces'
+import { QuestionParams, QuestionProp } from '@/utils/interfaces'
 
-const { setWallet } = globalActions
+const { setWallet, setQuestions } = globalActions
 const ContractAddress = address.address
 const ContractABI = abi.abi
 
@@ -70,6 +70,32 @@ const checkWallet = async () => {
   }
 }
 
+// create question and return question to component (react)
+const createQuestion = async (data: QuestionParams) => {
+  if (!ethereum) {
+    reportError('Please Install MetaMask')
+    return Promise.reject(new Error('Please Install MetaMask'))
+  }
+  try {
+    const contract = await getEthereumContract() // Create contract instance from ethers to interact with the smart contract
+    const { title, description, tags, prize } = data
+
+    tx = await contract.createQuestion(title, description, tags, {
+      value: prize ? toWei(Number(prize)) : 0,
+    }) // Call createQuestion function from the smart contract
+
+    await tx.wait() // Wait for the transaction to be mined and confirmed on the blockchain before proceeding to the next line of code
+
+    const questions = await getQuestions() // get questions from smart contract
+    store.dispatch(setQuestions(questions)) // set questions to global state (redux)
+
+    return Promise.resolve(tx.hash) // return transaction hash to component (react)
+  } catch (error) {
+    reportError(error)
+    return Promise.reject(error)
+  }
+}
+
 // get questions from smart contract and return questions to component (react)
 const getQuestions = async (): Promise<QuestionProp[]> => {
   try {
@@ -121,4 +147,4 @@ const reportError = (err: any) => {
   console.log(err)
 }
 
-export { connectWallet, checkWallet, getQuestions, getQuestion }
+export { connectWallet, checkWallet, createQuestion, getQuestions, getQuestion }

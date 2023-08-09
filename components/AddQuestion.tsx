@@ -1,3 +1,4 @@
+import { createQuestion } from '@/services/blockchain'
 import { globalActions } from '@/store/globalSlices'
 import { QuestionParams, RootState } from '@/utils/interfaces'
 import React, { FormEvent, useState } from 'react'
@@ -25,6 +26,18 @@ const AddQuestion: React.FC = () => {
     await toast.promise(
       new Promise<void>((resolve, reject) => {
         // TODO: add question to blockchain
+
+        createQuestion(question)
+          .then((tx) => {
+            closeModal()
+            console.log(tx)
+            resolve(tx)
+          })
+          .catch((err) => {
+            alert(JSON.stringify(err))
+            console.log(err)
+            reject(err)
+          })
       }),
       {
         pending: 'Approve transaction...',
@@ -58,15 +71,14 @@ const AddQuestion: React.FC = () => {
         <div className="flex flex-col">
           <div className="flex flex-row justify-between items-center">
             <p className="font-semibold">Add idea</p>
-            <button
-              type="button"
-              className="border-0 bg-transparent focus:outline-none"
-              onClick={closeModal}
-            >
+            <button onClick={closeModal} className="border-0 bg-transparent focus:outline-none">
               <FaTimes />
             </button>
           </div>
-          <form className="flex flex-col justify-center items-start rounded-xl mt-5 mb-5">
+          <form
+            onSubmit={handleSubmit}
+            className="flex flex-col justify-center items-start rounded-xl mt-5 mb-5"
+          >
             <label className="text-[12px]">Title</label>
             <div className="py-4 w-full border border-[#212D4A] rounded-full flex items-center px-4 mb-3 mt-2">
               <input
@@ -101,31 +113,32 @@ const AddQuestion: React.FC = () => {
                 name="tags"
                 placeholder="Separate tags with commas, eg. php, css"
                 className="bg-transparent outline-none w-full placeholder-[#3D3857] text-sm"
+                value={question.tags}
+                onChange={handleChange}
+                required
               />
             </div>
 
             <label className="text-[12px]">Idea</label>
 
             <textarea
-              onChange={handleChange}
               placeholder="Drop your idea here"
               className="h-[162px] w-full bg-transparent border border-[#212D4A] rounded-xl py-3 px-3
               focus:outline-none focus:ring-0 resize-none
               placeholder-[#3D3857] text-sm"
               name="description"
+              onChange={handleChange}
               value={question.description}
               required
             />
+            <button
+              type="submit"
+              className="text-sm bg-blue-600 rounded-full w-[150px] h-[48px] text-white
+            right-2 sm:right-10 hover:bg-blue-700 transition-colors duration-300 mt-5"
+            >
+              Submit
+            </button>
           </form>
-
-          <button
-            className="text-sm bg-blue-600 rounded-full w-[150px] h-[48px] text-white
-            right-2 sm:right-10 hover:bg-blue-700 transition-colors duration-300"
-            type="submit"
-            onSubmit={handleSubmit}
-          >
-            Submit
-          </button>
         </div>
       </div>
     </div>
