@@ -128,20 +128,22 @@ const getQuestion = async (id: number): Promise<QuestionProp> => {
 // structure questions
 
 const structureQuestions = (questions: any[]): QuestionProp[] =>
-  questions.map((question) => ({
-    id: Number(question.id),
-    title: question.title,
-    description: question.description,
-    owner: question.owner,
-    winner: question.winner,
-    paidout: question.paidout,
-    deleted: question.deleted,
-    updated: Number(question.updated),
-    created: Number(question.created),
-    answers: Number(question.answers),
-    tags: question.tags.split(',').map((tag: string) => tag.trim()),
-    prize: Number(fromWei(question.prize)),
-  }))
+  questions
+    .map((question) => ({
+      id: Number(question.id),
+      title: question.title,
+      description: question.description,
+      owner: question.owner,
+      winner: question.winner,
+      paidout: question.paidout,
+      deleted: question.deleted,
+      updated: Number(question.updated),
+      created: Number(question.created),
+      answers: Number(question.answers),
+      tags: question.tags.split(',').map((tag: string) => tag.trim()),
+      prize: Number(fromWei(question.prize)),
+    }))
+    .sort((a, b) => b.created - a.created) // sort questions by created date (newest first) using created property of question object (QuestionProp) returned from smart contract (getQuestions function)
 
 const reportError = (err: any) => {
   console.log(err)
