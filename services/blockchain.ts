@@ -5,7 +5,7 @@ import address from '@/artifacts/contractAddress.json'
 import abi from '@/artifacts/contracts/AnswerToEarn.sol/AnswerToEarn.json'
 import { QuestionParams, QuestionProp } from '@/utils/interfaces'
 
-const { setWallet, setQuestions } = globalActions
+const { setWallet, setQuestions, setQuestion } = globalActions
 const ContractAddress = address.address
 const ContractABI = abi.abi
 
@@ -70,7 +70,7 @@ const checkWallet = async () => {
   }
 }
 
-// create question and return question to component (react)
+// update question and return question to component (react)
 const createQuestion = async (data: QuestionParams) => {
   if (!ethereum) {
     reportError('Please Install MetaMask')
@@ -88,6 +88,27 @@ const createQuestion = async (data: QuestionParams) => {
 
     const questions = await getQuestions() // get questions from smart contract
     store.dispatch(setQuestions(questions)) // set questions to global state (redux)
+
+    return Promise.resolve(tx.hash) // return transaction hash to component (react)
+  } catch (error) {
+    reportError(error)
+    return Promise.reject(error)
+  }
+}
+
+const updateQuestion = async (id: number, data: QuestionParams) => {
+  if (!ethereum) {
+    reportError('Please Install MetaMask')
+    return Promise.reject(new Error('Please Install MetaMask'))
+  }
+  try {
+    const contract = await getEthereumContract() // Create contract instance from ethers to interact with the smart contract
+    const { title, description, tags } = data
+
+    await tx.wait() // Wait for the transaction to be mined and confirmed on the blockchain before proceeding to the next line of code
+
+    const question = await getQuestion(id) // get questions from smart contract
+    store.dispatch(setQuestion(question)) // set questions to global state (redux)
 
     return Promise.resolve(tx.hash) // return transaction hash to component (react)
   } catch (error) {
@@ -143,10 +164,10 @@ const structureQuestions = (questions: any[]): QuestionProp[] =>
       tags: question.tags.split(',').map((tag: string) => tag.trim()),
       prize: Number(fromWei(question.prize)),
     }))
-    .sort((a, b) => b.created - a.created) // sort questions by created date (newest first) using created property of question object (QuestionProp) returned from smart contract (getQuestions function)
+    .sort((a, b) => b.created - a.created) //   using created property of question object (QuestionProp) returned from smart contract (getQuestions function)
 
 const reportError = (err: any) => {
   console.log(err)
 }
 
-export { connectWallet, checkWallet, createQuestion, getQuestions, getQuestion }
+export { connectWallet, checkWallet, createQuestion, getQuestions, getQuestion, updateQuestion }
