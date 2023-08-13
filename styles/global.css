@@ -1,0 +1,34 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  @apply bg-background !scrollbar-thin !scrollbar-track-[#16112D] !scrollbar-thumb-[#0F0D1A];
+}
+.bg-background {
+  background-color: '#0F0D1A';
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.radial-gradient {
+  background-image: radial-gradient(
+    66.89% 66.89% at 50% 33.11%,
+    #1c1643 0%,
+    #16112e 42.71%,
+    #0d0b15 87.09%
+  );
+  background-size: 100% 100%; /* Adjust the background size to cover the entire viewport */
+}
