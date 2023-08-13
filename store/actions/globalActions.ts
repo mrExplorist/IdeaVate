@@ -17,4 +17,7 @@ export const globalActions = {
   setUpdateQuestionModal: (state: GlobalState, action: PayloadAction<string>) => {
     state.updateQuestionModal = action.payload
   },
+  setDeleteQuestionModal: (state: GlobalState, action: PayloadAction<string>) => {
+    state.deleteQuestionModal = action.payload
+  },
 }

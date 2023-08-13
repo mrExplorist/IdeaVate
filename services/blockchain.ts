@@ -78,9 +78,9 @@ const createQuestion = async (data: QuestionParams) => {
   }
   try {
     const contract = await getEthereumContract() // Create contract instance from ethers to interact with the smart contract
-    const { title, description, tags, prize } = data
+    const { title, description, tags, prize, category } = data
 
-    tx = await contract.createQuestion(title, description, tags, {
+    tx = await contract.createQuestion(title, description, tags, category, {
       value: prize ? toWei(Number(prize)) : 0,
     }) // Call createQuestion function from the smart contract
 
@@ -103,7 +103,9 @@ const updateQuestion = async (id: number, data: QuestionParams) => {
   }
   try {
     const contract = await getEthereumContract() // Create contract instance from ethers to interact with the smart contract
-    const { title, description, tags } = data
+    const { title, description, tags, category } = data
+
+    tx = await contract.updateQuestion(id, title, description, tags) // Call updateQuestion function from the smart contract
 
     await tx.wait() // Wait for the transaction to be mined and confirmed on the blockchain before proceeding to the next line of code
 
@@ -117,6 +119,22 @@ const updateQuestion = async (id: number, data: QuestionParams) => {
   }
 }
 
+const deleteQuestion = async (id: number) => {
+  if (!ethereum) {
+    reportError('Please Install MetaMask')
+    return Promise.reject(new Error('Please Install MetaMask'))
+  }
+  try {
+    const contract = await getEthereumContract() // Create contract instance from ethers to interact with the smart contract
+
+    tx = await contract.deleteQuestion(id) // Call deleteQuestion function from the smart contract
+
+    return Promise.resolve(tx.hash) // return transaction hash to component (react)
+  } catch (error) {
+    reportError(error)
+    return Promise.reject(error)
+  }
+}
 // get questions from smart contract and return questions to component (react)
 const getQuestions = async (): Promise<QuestionProp[]> => {
   try {
@@ -154,6 +172,7 @@ const structureQuestions = (questions: any[]): QuestionProp[] =>
       id: Number(question.id),
       title: question.title,
       description: question.description,
+      category: question.category,
       owner: question.owner,
       winner: question.winner,
       paidout: question.paidout,
@@ -170,4 +189,12 @@ const reportError = (err: any) => {
   console.log(err)
 }
 
-export { connectWallet, checkWallet, createQuestion, getQuestions, getQuestion, updateQuestion }
+export {
+  connectWallet,
+  checkWallet,
+  createQuestion,
+  getQuestions,
+  getQuestion,
+  updateQuestion,
+  deleteQuestion,
+}
