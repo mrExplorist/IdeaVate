@@ -5,11 +5,27 @@ import React, { FormEvent, useState } from 'react'
 import { FaTimes } from 'react-icons/fa'
 import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
+import { Listbox, Transition } from '@headlessui/react'
+import { HiSelector } from 'react-icons/hi'
 
 const AddQuestion: React.FC = () => {
   const dispatch = useDispatch()
   const { setAddQuestionModal } = globalActions
-
+  const categories = [
+    { id: 1, name: 'Productivity', unavailable: false },
+    { id: 2, name: 'Social', unavailable: false },
+    { id: 3, name: 'Tech', unavailable: false },
+    { id: 4, name: 'Education', unavailable: true },
+    { id: 5, name: 'Health', unavailable: false },
+    { id: 6, name: 'Tool', unavailable: false },
+    { id: 7, name: 'Fun', unavailable: false },
+    { id: 8, name: 'Entertainment', unavailable: false },
+    { id: 9, name: 'Extension', unavailable: false },
+    { id: 10, name: 'Business', unavailable: false },
+    { id: 11, name: 'Design', unavailable: false },
+    { id: 12, name: 'Others', unavailable: false },
+  ]
+  const [category, setCategory] = useState(categories[2])
   const { addQuestionModal } = useSelector((states: RootState) => states.globalStates)
 
   const [question, setQuestion] = useState<QuestionParams>({
@@ -17,11 +33,19 @@ const AddQuestion: React.FC = () => {
     description: '',
     prize: null,
     tags: '',
+    category: '',
   })
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
-    if (!question.title || !question.description || !question.prize || !question.tags) return
+    if (
+      !question.title ||
+      !question.description ||
+      !question.prize ||
+      !question.tags ||
+      !question.category
+    )
+      return
     console.log(question)
     await toast.promise(
       new Promise<void>((resolve, reject) => {
@@ -41,7 +65,7 @@ const AddQuestion: React.FC = () => {
       }),
       {
         pending: 'Approve transaction...',
-        success: 'Idea added successfully ✅!',
+        success: 'Idea added successfully 👌!',
         error: 'Encountered error 🤯‼',
       }
     )
@@ -59,13 +83,14 @@ const AddQuestion: React.FC = () => {
       description: '',
       prize: null,
       tags: '',
+      category: '',
     })
   }
 
   return (
     <div
       className={`fixed top-0 left-0 w-screen h-screen flex items-center justify-center
-    bg-black bg-opacity-50 transform z-50 transition-transform duration-300 ${addQuestionModal}`}
+    bg-black bg-opacity-50 transform z-50 transition-transform duration-400 ${addQuestionModal}`}
     >
       <div className="bg-[#16112F] text-[#BBBBBB] shadow-lg shadow-pink-900 rounded-xl w-11/12 md:w-2/5 h-7/12 p-6">
         <div className="flex flex-col">
@@ -96,9 +121,9 @@ const AddQuestion: React.FC = () => {
                 name="prize"
                 onChange={handleChange}
                 type="number"
-                min={0.01}
-                step={0.01}
-                placeholder="ETH e.g 0.02"
+                min={0.0001}
+                step={0.0001}
+                placeholder="ETH e.g 0.0002"
                 className="bg-transparent outline-none w-full placeholder-[#3D3857] text-sm"
                 value={question.prize !== null ? question.prize.toString() : ''}
                 required
@@ -131,6 +156,53 @@ const AddQuestion: React.FC = () => {
               value={question.description}
               required
             />
+
+            <label className="text-[12px] p-2">Select Category</label>
+            <Listbox
+              value={category}
+              onChange={setCategory}
+              as="div"
+              className="w-full relative z-10 tracking-wide text-sm "
+            >
+              <div className="flex justify-between w-full bg-transparent border border-[#212D4A] rounded-xl py-3 px-3 focus:outline-none focus:ring-0">
+                <Listbox.Button className="flex items-center space-x-1 text-sm">
+                  {category.name}
+                </Listbox.Button>
+                <HiSelector className="text-[#3D3857]" />
+              </div>
+
+              <Transition
+                enter="transition duration-100 ease-out"
+                enterFrom="transform scale-95 opacity-0"
+                enterTo="transform scale-100 opacity-100"
+                leave="transition duration-75 ease-out"
+                leaveFrom="transform scale-100 opacity-100"
+                leaveTo="transform scale-95 opacity-0"
+              >
+                <Listbox.Options className="absolute max-h-40 overflow-y-auto w-full z-10 mt-2 space-y-1 bg-[#16112F] border border-[#212D4A] rounded-xl shadow-md scrollbar-thin scrollbar-thumb-[#16112F] scrollbar-track-slate-500  ">
+                  {categories.map((category) => (
+                    <Listbox.Option
+                      as="span"
+                      key={category.id}
+                      value={category}
+                      disabled={category.unavailable}
+                      className="cursor-pointer"
+                    >
+                      {({ active, selected }) => (
+                        <li
+                          className={`pl-3 rounded-md pr-6 py-2 text-white ${
+                            active ? 'bg-[#523CAF] text-white shadow-md' : 'text-gray-300'
+                          }`}
+                        >
+                          {selected && <HiSelector className="mr-2 text-white" />}
+                          {category.name}
+                        </li>
+                      )}
+                    </Listbox.Option>
+                  ))}
+                </Listbox.Options>
+              </Transition>
+            </Listbox>
             <button
               type="submit"
               className="text-sm bg-blue-600 rounded-full w-[150px] h-[48px] text-white
